@@ -34,22 +34,22 @@ class SRCNN(object):
         with tf.name_scope('conv'+name):
             w=tf.get_variable('W'+name,filter_shape,initializer=tf.contrib.layers.xavier_initializer(seed=seed))
             b=tf.Variable(tf.constant(0.1,shape=[filter_shape[4]]), name='b'+name)
-            conv=tf.nn.conv3d(input, w, strides=[1,1,1,1,1], padding='SAME')
+            conv=tf.nn.conv3d(input, w, strides=[1,1,1,1,1], padding='VALID')
             act=tf.nn.relu(conv+b)
-            tf.summary.histogram('weights',w)
-            tf.summary.histogram('biases',b)
-            tf.summary.histogram('convs',conv)
+            tf.summary.histogram('weights'+name,w)
+            tf.summary.histogram('biases'+name,b)
+            tf.summary.histogram('convs'+name,conv)
             return act
     @staticmethod
     def conv_layer_noact(input,filter_shape,seed=111,name='1'):#filter_shape: [h,w,c_in,c_out]
         with tf.name_scope('conv'+name):
             w=tf.get_variable('W'+name,filter_shape,initializer=tf.contrib.layers.xavier_initializer(seed=seed))
             b=tf.Variable(tf.constant(0.1,shape=[filter_shape[4]]), name='b'+name)
-            conv=tf.nn.conv2d(input, w, strides=[1,1,1,1,1], padding='SAME')
-            tf.summary.histogram('weights',w)
-            tf.summary.histogram('biases',b)
-            tf.summary.histogram('convs',conv)
-            tf.summary.image('output',conv)
+            conv=tf.nn.conv3d(input, w, strides=[1,1,1,1,1], padding='VALID')
+            tf.summary.histogram('weights'+name,w)
+            tf.summary.histogram('biases'+name,b)
+            tf.summary.histogram('convs'+name,conv)
+            #tf.summary.image('output',conv)
             return conv+b
     def build_model(self):
         #input
@@ -57,8 +57,8 @@ class SRCNN(object):
         
         #tf.summary.image('input',self.images[:,:,:,(self.config.c_dim-1)//2:(self.config.c_dim-1)//2+1])
         #output
-        self.labels = tf.placeholder(tf.float32, [None, self.config.label_size, self.config.label_size, 3], name='labels')
-        tf.summary.image('target',self.labels)
+        self.labels = tf.placeholder(tf.float32, [None, self.config.label_size, self.config.label_size, self.config.label_size, 3], name='labels')
+        #tf.summary.image('target',self.labels)
         #weights
 #        self.weights = {
 #          'w1': tf.get_variable('W1',[9, 9, self.config.c_dim, 64], initializer=tf.contrib.layers.xavier_initializer(seed=111)),
@@ -78,7 +78,7 @@ class SRCNN(object):
 #            self.conv2 = tf.nn.relu(tf.nn.conv2d(self.conv1, self.weights['w2'], strides=[1,1,1,1], padding='SAME') + self.biases['b2'])
 #        with tf.name_scope('conv3'):
 #            self.pred  = tf.nn.conv2d(self.conv2, self.weights['w3'], strides=[1,1,1,1], padding='SAME') + self.biases['b3']
-        self.conv1=self.conv_layer(self.images,[9,9,9,self.config.c_dim,64],seed=111,name='1')
+        self.conv1=self.conv_layer(self.images,[9,9,9,3,64],seed=111,name='1')
         self.conv2=self.conv_layer(self.conv1,[1,1,1,64,32],seed=222,name='2')
         #prediction
         self.pred = self.conv_layer_noact(self.conv2,[5,5,5,32,3],seed=333,name='3')

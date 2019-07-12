@@ -207,7 +207,7 @@ def input_setup(sess, config):
     tst_sub_label_sequence = []
     #nxny_list=list()
     print("making data...")
-    
+    print(data)
     for i in range(len(data)):
         for j in range(len(data[i])):
             #preprocess each image

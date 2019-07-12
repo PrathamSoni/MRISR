@@ -170,7 +170,7 @@ class MedicalImageDataProvider(BaseDataProvider):
         super(MedicalImageDataProvider, self).__init__(a_min, a_max)
         self.file_idx = -1
         self.shuffle_data = shuffle_data
-        self.channels = 3
+        self.channels = 1
 
         self.data_files = self._find_data_files(search_path)
 
