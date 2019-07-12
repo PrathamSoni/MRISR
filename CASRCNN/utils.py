@@ -220,7 +220,7 @@ def input_setup(sess, config):
                 else:
                     h, w, l = input_.shape
                 output=generate_patch(h,w,l,input_,label_,padding,config)
-                print("patch made")
+                print(data[i][j])
                 if(i==0):#train
                     trn_sub_input_sequence.append(output[3])
                     trn_sub_label_sequence.append(output[4])

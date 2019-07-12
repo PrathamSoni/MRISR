@@ -113,7 +113,7 @@ class DCSRN(object):
         print(self.y.shape)
         logits2D = tf.reshape(self.logits, [1, 64, -1, 1])
         #HR2D = tf.reshape(self.y, [1, 64, -1, 1])
-        self.mean_ssim =  "n/a"#self._get_ssim(logits2D, HR2D)
+        self.mean_ssim =  tf.zeros([1])#self._get_ssim(logits2D, HR2D)
 
         '''        
         batch_size = tf.shape(self.logits)[0]
@@ -261,8 +261,10 @@ class Trainer(object):
             return save_path
         
         init = self._initialize(training_iters, output_path, restore, prediction_path)
-        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1.0)
-        with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
+
+        with tf.Session() as sess:#config=config#) as sess:
             if write_graph:
                 tf.train.write_graph(sess.graph_def, output_path, "graph.pb", False)
             

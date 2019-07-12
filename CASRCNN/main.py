@@ -29,7 +29,6 @@ FLAGS = flags.FLAGS
 
 def main(_):
     """3.print configurations"""
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
     print('tf version:',tf.__version__)
     print('tf setup:')
     for k,v in FLAGS.flag_values_dict().items():
@@ -42,7 +41,10 @@ def main(_):
     if not os.path.exists(FLAGS.TB_dir):
         os.makedirs(FLAGS.TB_dir)
     """5.begin tf session"""
-    with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+
+    with tf.Session(config=config) as sess:
         print("building model...")
         """6.init srcnn model"""
         srcnn = SRCNN(sess, FLAGS)
